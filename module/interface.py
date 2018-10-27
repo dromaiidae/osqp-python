@@ -15,6 +15,7 @@ import sys
 class OSQP(object):
     def __init__(self):
         self._model = _osqp.OSQP()
+        self._model_setup = False
 
     def version(self):
         return self._model.version()
@@ -129,6 +130,7 @@ class OSQP(object):
         self._model.setup((n, m), P.data, P.indices, P.indptr, q,
                           A.data, A.indices, A.indptr,
                           l, u, **settings)
+        self._model_setup = True
 
     def update(self, **kwargs):
         """
@@ -136,6 +138,10 @@ class OSQP(object):
 
         Vectors q, l, u and matrices P and A are supported
         """
+
+        # first check if the model has been setup
+        if not self._model_setup:
+            raise AttributeError("Solver is uninitialized")
 
         # get arguments
         q = kwargs.pop('q', None)
@@ -228,6 +234,10 @@ class OSQP(object):
                                   'verbose', 'scaled_termination',
                                   'check_termination', 'time_limit',
         """
+
+        # first check if the model has been setup
+        if not self._model_setup:
+            raise AttributeError("Solver is uninitialized")
 
         # get arguments
         max_iter = kwargs.pop('max_iter', None)
@@ -325,6 +335,11 @@ class OSQP(object):
         """
         Warm start primal or dual variables
         """
+
+        # first check if the model has been setup
+        if not self._model_setup:
+            raise AttributeError("Solver is uninitialized")
+
         # get problem dimensions
         (n, m) = self._model.dimensions()
 
