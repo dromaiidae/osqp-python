@@ -427,7 +427,7 @@ static PyObject *OSQP_update_lin_cost(OSQP *self, PyObject *args){
     // Parse arguments
     if( !PyArg_ParseTuple(args, argparse_string,
                           &PyArray_Type, &q)) {
-            return NULL;
+        return NULL;
     }
 
     // Get contiguous data structure
@@ -445,7 +445,6 @@ static PyObject *OSQP_update_lin_cost(OSQP *self, PyObject *args){
     // Return None
     Py_INCREF(Py_None);
     return Py_None;
-
 }
 
 static PyObject *OSQP_update_lower_bound(OSQP *self, PyObject *args){
@@ -458,7 +457,7 @@ static PyObject *OSQP_update_lower_bound(OSQP *self, PyObject *args){
     // Parse arguments
     if( !PyArg_ParseTuple(args, argparse_string,
                           &PyArray_Type, &l)) {
-            return NULL;
+        return NULL;
     }
 
     // Get contiguous data structure
@@ -476,7 +475,6 @@ static PyObject *OSQP_update_lower_bound(OSQP *self, PyObject *args){
     // Return None
     Py_INCREF(Py_None);
     return Py_None;
-
 }
 
 static PyObject *OSQP_update_upper_bound(OSQP *self, PyObject *args){
@@ -489,7 +487,7 @@ static PyObject *OSQP_update_upper_bound(OSQP *self, PyObject *args){
     // Parse arguments
     if( !PyArg_ParseTuple(args, argparse_string,
                           &PyArray_Type, &u)) {
-            return NULL;
+        return NULL;
     }
 
     // Get contiguous data structure
@@ -507,7 +505,6 @@ static PyObject *OSQP_update_upper_bound(OSQP *self, PyObject *args){
     // Return None
     Py_INCREF(Py_None);
     return Py_None;
-
 }
 
 
@@ -522,7 +519,7 @@ static PyObject *OSQP_update_bounds(OSQP *self, PyObject *args){
     if( !PyArg_ParseTuple(args, argparse_string,
                           &PyArray_Type, &l,
                           &PyArray_Type, &u)) {
-            return NULL;
+        return NULL;
     }
 
     // Get contiguous data structure
@@ -548,46 +545,48 @@ static PyObject *OSQP_update_bounds(OSQP *self, PyObject *args){
 
 // Update elements of matrix P
 static PyObject * OSQP_update_P(OSQP *self, PyObject *args) {
-		PyArrayObject *Px, *Px_cont, *Px_idx, *Px_idx_cont;
-		c_float * Px_arr;
-		c_int * Px_idx_arr;
-		c_int Px_n;
-		int float_type = get_float_type();
-		int int_type = get_int_type();
+	PyArrayObject *Px, *Px_cont, *Px_idx, *Px_idx_cont;
+	c_float * Px_arr;
+	c_int * Px_idx_arr;
+	c_int Px_n;
+	int float_type = get_float_type();
+	int int_type = get_int_type();
 
-		#ifdef DLONG
-		static char * argparse_string = "OOL";
-		#else
-		static char * argparse_string = "OOi";
-		#endif
+	#ifdef DLONG
+	static char * argparse_string = "O!O!L";
+	#else
+	static char * argparse_string = "O!O!i";
+	#endif
 
-		// Parse arguments
-		if( !PyArg_ParseTuple(args, argparse_string, &Px, &Px_idx, &Px_n)) {
-						return NULL;
-		}
+	// Parse arguments
+	if( !PyArg_ParseTuple(args, argparse_string,
+                          &PyArray_Type, &Px,
+                          &PyArray_Type, &Px_idx,
+                          &Px_n)) {
+		return NULL;
+	}
 
-		// Check if Px_idx is passed
-		if((PyObject *)Px_idx != Py_None){
-				Px_idx_cont = get_contiguous(Px_idx, int_type);
-				Px_idx_arr = (c_int *)PyArray_DATA(Px_idx_cont);
-		} else {
-				Px_idx_cont = OSQP_NULL;
-				Px_idx_arr = OSQP_NULL;
-		}
+	// Check if Px_idx is passed
+    if (PyObject_Length((PyObject *)Px_idx) > 0){
+		Px_idx_cont = get_contiguous(Px_idx, int_type);
+		Px_idx_arr = (c_int *)PyArray_DATA(Px_idx_cont);
+	} else {
+		Px_idx_cont = OSQP_NULL;
+	    Px_idx_arr = OSQP_NULL;
+	}
 
-		// Get contiguous data structure
-		Px_cont = get_contiguous(Px, float_type);
+	// Get contiguous data structure
+	Px_cont = get_contiguous(Px, float_type);
 
-		// Copy array into c_float and c_int arrays
-		Px_arr = (c_float *)PyArray_DATA(Px_cont);
+	// Copy array into c_float and c_int arrays
+	Px_arr = (c_float *)PyArray_DATA(Px_cont);
 
-		// Update matrix P
-		osqp_update_P(self->workspace, Px_arr, Px_idx_arr, Px_n);
+	// Update matrix P
+	osqp_update_P(self->workspace, Px_arr, Px_idx_arr, Px_n);
 
-	  // Free data
-	  Py_DECREF(Px_cont);
-		if ((PyObject *)Px_idx != Py_None) Py_DECREF(Px_idx_cont);
-
+    // Free data
+    Py_DECREF(Px_cont);
+    if (PyObject_Length((PyObject *)Px_idx) > 0) Py_DECREF(Px_idx_cont);
 
     // Return None
     Py_INCREF(Py_None);
@@ -596,45 +595,48 @@ static PyObject * OSQP_update_P(OSQP *self, PyObject *args) {
 
 // Update elements of matrix A
 static PyObject * OSQP_update_A(OSQP *self, PyObject *args) {
-		PyArrayObject *Ax, *Ax_cont, *Ax_idx, *Ax_idx_cont;
-		c_float * Ax_arr;
-		c_int * Ax_idx_arr;
-		c_int Ax_n;
-		int float_type = get_float_type();
-		int int_type = get_int_type();
+    PyArrayObject *Ax, *Ax_cont, *Ax_idx, *Ax_idx_cont;
+    c_float * Ax_arr;
+    c_int * Ax_idx_arr;
+    c_int Ax_n;
+    int float_type = get_float_type();
+    int int_type = get_int_type();
 
-		#ifdef DLONG
-		static char * argparse_string = "OOL";
-		#else
-		static char * argparse_string = "OOi";
-		#endif
+    #ifdef DLONG
+    static char * argparse_string = "O!O!L";
+    #else
+    static char * argparse_string = "O!O!i";
+    #endif
 
-		// Parse arguments
-		if( !PyArg_ParseTuple(args, argparse_string, &Ax, &Ax_idx, &Ax_n)) {
-						return NULL;
-		}
+    // Parse arguments
+    if( !PyArg_ParseTuple(args, argparse_string,
+                          &PyArray_Type, &Ax,
+                          &PyArray_Type, &Ax_idx,
+                          &Ax_n)) {
+        return NULL;
+    }
 
-		// Check if Ax_idx is passed
-		if((PyObject *)Ax_idx != Py_None){
-				Ax_idx_cont = get_contiguous(Ax_idx, int_type);
-				Ax_idx_arr = (c_int *)PyArray_DATA(Ax_idx_cont);
-		} else {
-				Ax_idx_cont = OSQP_NULL;
-				Ax_idx_arr = OSQP_NULL;
-		}
+    // Check if Ax_idx is passed
+    if (PyObject_Length((PyObject *)Ax_idx) > 0){
+        Ax_idx_cont = get_contiguous(Ax_idx, int_type);
+        Ax_idx_arr = (c_int *)PyArray_DATA(Ax_idx_cont);
+    } else {
+        Ax_idx_cont = OSQP_NULL;
+        Ax_idx_arr = OSQP_NULL;
+    }
 
-		// Get contiguous data structure
-		Ax_cont = get_contiguous(Ax, float_type);
+    // Get contiguous data structure
+    Ax_cont = get_contiguous(Ax, float_type);
 
-		// Copy array into c_float and c_int arrays
-		Ax_arr = (c_float *)PyArray_DATA(Ax_cont);
+    // Copy array into c_float and c_int arrays
+    Ax_arr = (c_float *)PyArray_DATA(Ax_cont);
 
-		// Update matrix A
-		osqp_update_A(self->workspace, Ax_arr, Ax_idx_arr, Ax_n);
+    // Update matrix A
+    osqp_update_A(self->workspace, Ax_arr, Ax_idx_arr, Ax_n);
 
     // Free data
     Py_DECREF(Ax_cont);
-	if ((PyObject *)Ax_idx != Py_None) Py_DECREF(Ax_idx_cont);
+	if (PyObject_Length((PyObject *)Ax_idx) > 0) Py_DECREF(Ax_idx_cont);
 
     // Return None
     Py_INCREF(Py_None);
@@ -643,60 +645,65 @@ static PyObject * OSQP_update_A(OSQP *self, PyObject *args) {
 
 // Update elements of matrices P and A
 static PyObject * OSQP_update_P_A(OSQP *self, PyObject *args) {
-		PyArrayObject *Px, *Px_cont, *Px_idx, *Px_idx_cont;
-		PyArrayObject *Ax, *Ax_cont, *Ax_idx, *Ax_idx_cont;
-		c_float * Px_arr, * Ax_arr;
-		c_int * Px_idx_arr, * Ax_idx_arr;
-		c_int Px_n, Ax_n;
-		int float_type = get_float_type();
-		int int_type = get_int_type();
+    PyArrayObject *Px, *Px_cont, *Px_idx, *Px_idx_cont;
+    PyArrayObject *Ax, *Ax_cont, *Ax_idx, *Ax_idx_cont;
+    c_float * Px_arr, * Ax_arr;
+    c_int * Px_idx_arr, * Ax_idx_arr;
+    c_int Px_n, Ax_n;
+    int float_type = get_float_type();
+    int int_type = get_int_type();
 
-		#ifdef DLONG
-		static char * argparse_string = "OOLOOL";
-		#else
-		static char * argparse_string = "OOiOOi";
-		#endif
+    #ifdef DLONG
+    static char * argparse_string = "O!O!LO!O!L";
+    #else
+    static char * argparse_string = "O!O!iO!O!i";
+    #endif
 
-		// Parse arguments
-		if( !PyArg_ParseTuple(args, argparse_string, &Px, &Px_idx, &Px_n,
-													&Ax, &Ax_idx, &Ax_n)) {
-						return NULL;
-		}
+    // Parse arguments
+    if( !PyArg_ParseTuple(args, argparse_string,
+                          &PyArray_Type, &Px,
+                          &PyArray_Type, &Px_idx,
+                          &Px_n,
+                          &PyArray_Type, &Ax,
+                          &PyArray_Type, &Ax_idx,
+                          &Ax_n)) {
+        return NULL;
+    }
 
-		// Check if Ax_idx is passed
-		if((PyObject *)Ax_idx != Py_None){
-				Ax_idx_cont = get_contiguous(Ax_idx, int_type);
-				Ax_idx_arr = (c_int *)PyArray_DATA(Ax_idx_cont);
-		} else {
-				Ax_idx_cont = OSQP_NULL;
-				Ax_idx_arr = OSQP_NULL;
-		}
+    // Check if Ax_idx is passed
+    if (PyObject_Length((PyObject *)Ax_idx) > 0){
+        Ax_idx_cont = get_contiguous(Ax_idx, int_type);
+        Ax_idx_arr = (c_int *)PyArray_DATA(Ax_idx_cont);
+    } else {
+        Ax_idx_cont = OSQP_NULL;
+        Ax_idx_arr = OSQP_NULL;
+    }
 
-		// Check if Px_idx is passed
-		if((PyObject *)Px_idx != Py_None){
-				Px_idx_cont = get_contiguous(Px_idx, int_type);
-				Px_idx_arr = (c_int *)PyArray_DATA(Px_idx_cont);
-		} else {
-				Px_idx_cont = OSQP_NULL;
-				Px_idx_arr = OSQP_NULL;
-		}
+    // Check if Px_idx is passed
+    if (PyObject_Length((PyObject *)Px_idx) > 0){
+        Px_idx_cont = get_contiguous(Px_idx, int_type);
+        Px_idx_arr = (c_int *)PyArray_DATA(Px_idx_cont);
+    } else {
+        Px_idx_cont = OSQP_NULL;
+        Px_idx_arr = OSQP_NULL;
+    }
 
-		// Get contiguous data structure
-		Px_cont = get_contiguous(Px, float_type);
-		Ax_cont = get_contiguous(Ax, float_type);
+    // Get contiguous data structure
+    Px_cont = get_contiguous(Px, float_type);
+    Ax_cont = get_contiguous(Ax, float_type);
 
-		// Copy array into c_float and c_int arrays
-		Px_arr = (c_float *)PyArray_DATA(Px_cont);
-		Ax_arr = (c_float *)PyArray_DATA(Ax_cont);
+    // Copy array into c_float and c_int arrays
+    Px_arr = (c_float *)PyArray_DATA(Px_cont);
+    Ax_arr = (c_float *)PyArray_DATA(Ax_cont);
 
-		// Update matrices P and A
-		osqp_update_P_A(self->workspace, Px_arr, Px_idx_arr, Px_n, Ax_arr, Ax_idx_arr, Ax_n);
+    // Update matrices P and A
+    osqp_update_P_A(self->workspace, Px_arr, Px_idx_arr, Px_n, Ax_arr, Ax_idx_arr, Ax_n);
 
     // Free data
     Py_DECREF(Px_cont);
-		if ((PyObject *)Px_idx != Py_None) Py_DECREF(Px_idx_cont);
-		Py_DECREF(Ax_cont);
-		if ((PyObject *)Ax_idx != Py_None) Py_DECREF(Ax_idx_cont);
+	if (PyObject_Length((PyObject *)Px_idx) > 0) Py_DECREF(Px_idx_cont);
+	Py_DECREF(Ax_cont);
+	if (PyObject_Length((PyObject *)Ax_idx) > 0) Py_DECREF(Ax_idx_cont);
 
     // Return None
     Py_INCREF(Py_None);
@@ -735,7 +742,6 @@ static PyObject *OSQP_warm_start(OSQP *self, PyObject *args){
     // Return None
     Py_INCREF(Py_None);
     return Py_None;
-
 }
 
 static PyObject *OSQP_warm_start_x(OSQP *self, PyObject *args){
@@ -945,7 +951,6 @@ static PyObject *OSQP_update_rho(OSQP *self, PyObject *args){
 
 static PyObject *OSQP_update_alpha(OSQP *self, PyObject *args){
     c_float alpha_new;
-
 
     #ifdef DFLOAT
     static char * argparse_string = "f";
