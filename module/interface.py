@@ -152,14 +152,14 @@ class OSQP(object):
             raise ValueError("q must have length n")
         if l is not None:
             if not isinstance(l, np.ndarray):
-                raise TypeError("l must be numpy.ndarray, not %s" % type(l))
+                raise TypeError("l must be numpy.ndarray, not %s" % type(l).__name__)
             elif len(l) != m:
                 raise ValueError("l must have length m")
             # Convert values to -OSQP_INFTY
             l = np.maximum(l, -self._model.constant('OSQP_INFTY'))
         if u is not None:
             if not isinstance(u, np.ndarray):
-                raise TypeError("u must be numpy.ndarray, not %s" % type(u))
+                raise TypeError("u must be numpy.ndarray, not %s" % type(u).__name__)
             elif len(u) != m:
                 raise ValueError("u must have length m")
             # Convert values to OSQP_INFTY
