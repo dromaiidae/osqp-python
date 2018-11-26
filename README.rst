@@ -44,3 +44,5 @@ Fork Notes
 Make sure to run ``git submodule sync`` and ``git submodule update --remote`` to update the osqp_sources folder.
 
 Install by running ``setup.py install`` with python
+
+Refer to `here <https://osqp.org/docs/get_started/linear_system_solvers.html>`_ to link linear system shared libraries.
