@@ -407,6 +407,9 @@ static PyObject *OSQP_constant(OSQP *self, PyObject *args) {
 				return Py_BuildValue("i", MKL_PARDISO_SOLVER);
 		}
 
+		if(!strcmp(constant_name, "CS294_SOLVER")){
+				return Py_BuildValue("i", CS294_SOLVER);
+		}
 
     // If reached here error
     PyErr_SetString(PyExc_ValueError, "Constant not recognized");

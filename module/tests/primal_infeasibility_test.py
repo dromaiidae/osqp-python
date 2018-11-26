@@ -22,6 +22,7 @@ class primal_infeeasibility_tests(unittest.TestCase):
                      'eps_rel': 1e-05,
                      'eps_dual_inf': 1e-20,
                      'max_iter': 2500,
+                     'linsys_solver': 'cs294',
                      'polish': False}
 
     def test_primal_infeasible_problem(self):

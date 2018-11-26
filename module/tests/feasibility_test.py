@@ -36,6 +36,7 @@ class feasibility_tests(unittest.TestCase):
                      'alpha': 1.6,
                      'max_iter': 5000,
                      'polish': False,
+                     'linsys_solver': 'cs294',
                      'warm_start': True,
                      'polish_refine_iter': 4}
         self.model = osqp.OSQP()

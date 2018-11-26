@@ -36,3 +36,11 @@ Packaging
 ---------
 This repository just performs the tests and does not build any python package.
 We use the external repositories for `conda recipes <https://github.com/oxfordcontrol/osqp-recipes>`_ and `python wheels <https://github.com/oxfordcontrol/osqp-wheels>`_.
+
+
+Fork Notes
+----------
+
+Make sure to run ``git submodule sync`` and ``git submodule update --remote`` to update the osqp_sources folder.
+
+Install by running ``setup.py install`` with python

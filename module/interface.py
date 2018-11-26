@@ -396,6 +396,8 @@ class OSQP(object):
                     self._model.constant('QDLDL_SOLVER')
         elif linsys_solver_str == 'mkl pardiso':
             settings['linsys_solver'] = self._model.constant('MKL_PARDISO_SOLVER')
+        elif linsys_solver_str == 'cs294':
+            settings['linsys_solver'] = self._model.constant('CS294_SOLVER')
         # Default solver: QDLDL
         elif linsys_solver_str == '':
             settings['linsys_solver'] = \
